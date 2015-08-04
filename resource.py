@@ -40,11 +40,11 @@ class Finviz(API_Resource):
     def get(self, service, ticker_symbol):
         args = self.parser.parse_args()
 
-        response = None
+        response = API_Resource.error(404)
         if service == "statistics":
             response = self.get_statistics(ticker_symbol, args)
 
-        return response if response else API_Resource.error(404)
+        return response
 
     def get_statistics(self, ticker_symbol, args):
         if args["fields"]:
@@ -66,11 +66,11 @@ class Stocktwits(API_Resource):
         super().__init__()
 
     def get(self, service, ticker_symbol):
-        response = None
+        response = API_Resource.error(404)
         if service == "sentiment":
             response = self.get_sentiment(ticker_symbol)
 
-        return response if response else API_Resource.error(404)
+        return response
 
     def get_sentiment(self, ticker_symbol):
         response = {}
@@ -84,13 +84,13 @@ class Zacks(API_Resource):
         super().__init__()
 
     def get(self, service, ticker_symbol):
-        response = None
+        response = API_Resource.error(404)
         if service == "rating":
             response = self.get_rating(ticker_symbol)
         elif service == "peers":
             response = self.get_peers(ticker_symbol)
 
-        return response if response else API_Resource.error(404)
+        return response
 
     def get_rating(self, ticker_symbol):
         response = {}
