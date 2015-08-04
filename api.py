@@ -11,7 +11,10 @@ api = Api(app)
 api.add_resource(resource.Finviz, "/finance/finviz/<string:service>/<string:ticker_symbol>")
 
 #StockTwits
-api.add_resource(resource.Stocktwits, "/finance/stocktwits/<string:services>/<string:ticker_symbol>")
+api.add_resource(resource.Stocktwits, "/finance/stocktwits/<string:service>/<string:ticker_symbol>")
+
+#Zacks
+api.add_resource(resource.Zacks, "/finance/zacks/<string:service>/<string:ticker_symbol>")
 
 if __name__ == '__main__':
     app.run(debug=True)

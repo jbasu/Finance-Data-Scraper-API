@@ -2,6 +2,7 @@ from flask import make_response, jsonify
 from flask_restful import reqparse, Resource
 import finviz
 import stocktwits
+import zacks
 
 
 class API_Resource(Resource):
@@ -39,11 +40,11 @@ class Finviz(API_Resource):
     def get(self, service, ticker_symbol):
         args = self.parser.parse_args()
 
-        services = {
-            'statistics' : self.get_statistics(ticker_symbol, args)
-        }
+        response = None
+        if service == "statistics":
+            response = self.get_statistics(ticker_symbol, args)
 
-        return services[service] if service in services.keys() else API_Resource.error(404)
+        return response if response else API_Resource.error(404)
 
     def get_statistics(self, ticker_symbol, args):
         if args["fields"]:
@@ -65,13 +66,40 @@ class Stocktwits(API_Resource):
         super().__init__()
 
     def get(self, service, ticker_symbol):
-        pass
-    def get_sentiment(self, ticker_symbol, args):
-        pass
+        response = None
+        if service == "sentiment":
+            response = self.get_sentiment(ticker_symbol)
+
+        return response if response else API_Resource.error(404)
+
+    def get_sentiment(self, ticker_symbol):
+        response = {}
+        response["bullish"] = stocktwits.get_bullish_sentiment(ticker_symbol)
+        response["bearish"] = stocktwits.get_bearish_sentiment(ticker_symbol)
+
+        return API_Resource.json(response) if response["bullish"] and response["bearish"] else API_Resource.error(404)
 
 class Zacks(API_Resource):
-    def __init__():
+    def __init__(self):
         super().__init__()
 
     def get(self, service, ticker_symbol):
-        pass
+        response = None
+        if service == "rating":
+            response = self.get_rating(ticker_symbol)
+        elif service == "peers":
+            response = self.get_peers(ticker_symbol)
+
+        return response if response else API_Resource.error(404)
+
+    def get_rating(self, ticker_symbol):
+        response = {}
+        response["rating"]  = zacks.get_rating(ticker_symbol)
+
+        return API_Resource.json(response) if response["rating"] else API_Resource.error(404)
+
+    def get_peers(self, ticker_symbol):
+        response = {}
+        response["peers"]  = zacks.get_peers(ticker_symbol)
+
+        return API_Resource.json(response) if response["peers"] else API_Resource.error(404)
